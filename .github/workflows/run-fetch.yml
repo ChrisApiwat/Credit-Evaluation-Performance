@@ -2,8 +2,8 @@ name: Fetch and Export Tibero Data
 
 on:
   schedule:
-    - cron: '30 10 * * *'
-  workflow_dispatch:
+    - cron: '30 10 * * *'   # รันทุกวันเวลา 17:30 ICT (10:30 UTC)
+  workflow_dispatch:        # กดรันเองก็ได้
 
 jobs:
   run-fetch-data:
@@ -14,27 +14,27 @@ jobs:
       DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
     steps:
-    - name: 📥 Checkout repo
-      uses: actions/checkout@v3
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v3
 
-    - name: ⚙️ Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
+      - name: ⚙️ Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
 
-    - name: 📦 Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pandas openpyxl jaydebeapi
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas openpyxl jaydebeapi JPype1
 
-    - name: 📂 Run fetch_data.py
-      run: python fetch_data.py
+      - name: 📂 Run fetch_data.py
+        run: python fetch_data.py
 
-    - name: 🧪 Debug: list output files
-      run: dir
+      - name: 🧪 List Excel files
+        run: dir
 
-    - name: 📤 Upload exported Excel files
-      uses: actions/upload-artifact@v3.1.3
-      with:
-        name: evaluation-excel
-        path: Evaluation_*.xlsx
+      - name: 📤 Upload exported Excel files
+        uses: actions/upload-artifact@v3.1.3
+        with:
+          name: evaluation-excel
+          path: Evaluation_*.xlsx
