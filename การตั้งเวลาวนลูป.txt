@@ -1,0 +1,33 @@
+import schedule
+import time
+import sys
+
+# ฟังก์ชันที่ทำงานตามเวลา
+def query_data():
+    print("Running query data...")
+
+# ฟังก์ชันหยุดการทำงาน
+def stop_schedule():
+    print("Stopping the schedule...")
+    # หากต้องการหยุดทั้งการทำงานของ scheduler สามารถใช้ sys.exit() หรือ break ในลูปได้
+    global stop_flag
+    stop_flag = True
+
+# ตั้งเวลารันฟังก์ชันดึงข้อมูล
+schedule.every().day.at("09:00").do(query_data)
+schedule.every().day.at("21:00").do(stop_schedule)
+
+# ตัวแปร stop_flag สำหรับหยุดการทำงานในลูป
+stop_flag = False
+
+# รัน scheduler ตลอดเวลา
+while True:
+    schedule.run_pending()
+    if stop_flag:
+        print("Exiting the program...")
+        break  # หยุดการทำงานของโปรแกรม
+    time.sleep(1)
+    
+    # รีเซ็ต stop_flag เมื่อถึงเวลา 09:00 ของวันถัดไป
+    if time.localtime().tm_hour == 9 and time.localtime().tm_min == 0:
+        stop_flag = False

@@ -1,0 +1,10 @@
+stages:
+  - test
+
+test_script:
+  stage: test
+  image: python:3.10  # ใช้ Docker image ของ Python
+  before_script:
+    - pip install -r requirements.txt  # ติดตั้ง dependencies
+  script:
+    - python -m unittest discover -s tests  # รัน Unit Tests

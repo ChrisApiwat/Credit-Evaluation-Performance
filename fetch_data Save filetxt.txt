@@ -1,0 +1,115 @@
+import jaydebeapi
+import pandas as pd
+import os
+from datetime import datetime
+import schedule
+import time
+
+jdbc_driver = "com.tmax.tibero.jdbc.TbDriver"
+jdbc_url = "jdbc:tibero:thin:@192.169.10.51:18879:DSTFCC"  
+db_user = "Ap"  #
+db_password = "A123"  
+jdbc_jar = "tibero6-jdbc.jar"  
+
+# ประกาศฟังก์ชัน query_data()
+def query_data():
+  try:
+        # เชื่อมต่อฐานข้อมูล
+    conn = jaydebeapi.connect(jdbc_driver, jdbc_url, [db_user, db_password], jdbc_jar)
+        
+        # สร้าง cursor
+    cursor = conn.cursor()
+
+    # SQL1 Query GIS 04001 Pending
+    query1 = """ 
+   
+    """
+    # SQL2 Query GIS 04003 Approval
+    query2 ="""
+   """
+   # SQL3 Query GIS 04001 Cancelled
+    query3 ="""  """
+    
+    # ดึงข้อมูลจากฐานข้อมูล
+    cursor.execute(query1)
+    data1 = cursor.fetchall()
+    cursor.execute(query2)
+    data2 = cursor.fetchall()
+    cursor.execute(query3)
+    data3 = cursor.fetchall()
+
+    # แปลงข้อมูลเป็น DataFrame
+    df1 = pd.DataFrame(data1, columns=['Evaluator', 'On-boarding Channel', 'Product Code', 'Requested date', 'Request time', 'Customer No', 'Customer Name', 'Customer ID No.', 'Loan No.', 'Evaluating progress status', 'Project Code', 'Loan Amt.', 'Pre-Application No', 'CSS evaluation result', 'Final Result', 'Return reason', 'Cancellation Reason', 'Decline reason', 'Pending Reason', 'Evaluation Date', 'Confirmation date'])
+    df2 = pd.DataFrame(data2, columns=['Requested date', 'Evaluation status', 'Pre-Application No', 'Loan No.', 'Customer ID No.', 'Customer Name', 'Product Code', 'Project Code', 'Loan Amt.', 'Fast Approval', 'CSS result', 'Final Result', 'Evaluation Date', 'Evaluator', 'Approval result', 'Approval Date', 'Approver'])
+    df3 = pd.DataFrame(data3, columns=['Evaluator', 'On-boarding Channel', 'Product Code', 'Requested date', 'Request time', 'Customer No', 'Customer Name', 'Customer ID No.', 'Loan No.', 'Evaluating progress status', 'Project Code', 'Loan Amt.', 'Pre-Application No', 'CSS evaluation result', 'Final Result', 'Return reason', 'Cancellation Reason', 'Decline reason', 'Pending Reason', 'Evaluation Date', 'Confirmation date'])
+
+    # ฟังก์ชันแปลงข้อมูล
+    def some_transformation_function(df):
+        df['Requested date'] = pd.to_datetime(df['Requested date'], errors='coerce')
+        df['Loan No.'] = df['Loan No.'].astype(str)
+
+        # ตรวจสอบประเภทคอลัมน์เพื่อป้องกัน FutureWarning
+        if 'Requested date' in df.columns:
+            df['Requested date'] = df['Requested date'].astype('datetime64[ns]')
+
+        return df
+
+    # Apply transformation
+    transformed_df1 = some_transformation_function(df1)
+    transformed_df2 = some_transformation_function(df2)
+    transformed_df3 = some_transformation_function(df3)
+
+    # ตั้งชื่อไฟล์ตามเวลา
+    current_time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    file1 = f"Evaluation_List_{current_time}.xlsx"
+    file2 = f"Evaluation_Approval_{current_time}.xlsx"
+    file3 = f"Evaluation_List_Cancelled_{current_time}.xlsx"
+
+    # ลบไฟล์เก่า
+    for file in os.listdir():
+        if file.startswith("Evaluation_") and file.endswith(".xlsx"):
+            os.remove(file)
+
+    # บันทึกเป็น Excel
+    transformed_df1.to_excel(file1, index=False, engine="openpyxl")
+    transformed_df2.to_excel(file2, index=False, engine="openpyxl")
+    transformed_df3.to_excel(file3, index=False, engine="openpyxl")
+
+    print("Data has been transformed and saved to Excel.")
+
+except Exception as e:
+        print(f"Error occurred: {e}")
+
+finally:
+        if 'connection' in locals():  # เช็คว่า connection ถูกประกาศก่อนจะปิด
+            connection.close()
+
+# ฟังก์ชันย้ายไฟล์ไป backup
+def move_to_backup():
+    backup_dir = "backup"
+    os.makedirs(backup_dir, exist_ok=True)
+
+    for file in os.listdir():
+        if file.startswith("Evaluation_") and file.endswith(".xlsx"):
+            backup_path = os.path.join(backup_dir, file)
+            if not os.path.exists(backup_path):
+                os.rename(file, backup_path)
+    print("Files have been moved to backup.")
+    
+    
+
+# ตั้งเวลารันฟังก์ชันดึงข้อมูล
+schedule.every().day.at("09:30").do(query_data)
+schedule.every().day.at("10:30").do(query_data)
+schedule.every().day.at("13:00").do(query_data)
+schedule.every().day.at("15:30").do(query_data)
+schedule.every().day.at("17:00").do(query_data)
+schedule.every().day.at("20:50").do(query_data)
+
+# ตั้งเวลาย้ายไฟล์ไป backup ตอน 20:51
+schedule.every().day.at("20:51").do(move_to_backup)
+
+# รัน scheduler ตลอดเวลา
+while True:
+    schedule.run_pending()
+    time.sleep(1)

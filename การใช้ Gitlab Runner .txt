@@ -1,0 +1,82 @@
+sc start gitlab-runner
+gitlab-runner status
+
+
+ คำสั่ง sc ที่ใช้บ่อย
+คำสั่ง	ความหมาย
+sc query gitlab-runner	    ดูสถานะของ GitLab Runner
+sc start gitlab-runner	    เริ่มต้น (Start) GitLab Runner Service
+sc stop gitlab-runner	    หยุด (Stop) GitLab Runner Service
+sc restart gitlab-runner	รีสตาร์ท GitLab Runner (ต้องใช้ stop และ start)
+sc delete gitlab-runner	    ลบ Service ของ GitLab Runner
+sc config gitlab-runner obj= "LocalSystem" password= ""	เปลี่ยนให้ GitLab Runner รันภายใต้ Local System
+ตรวจสอบว่า Runner จับคู่กับ Tags schedule-runner หรือไม่
+gitlab-runner list
+
+gitlab-runner status
+gitlab-runner restart
+gitlab-runner --debug run
+
+
+https://github.com/PowerShell/PowerShell/releases/tag/v7.6.0-preview.3
+
+Ctrl + C -----stop
+
+
+🔹 วิธีที่ 3: ติดตั้ง PowerShell Core (pwsh)
+ถ้า GitLab Runner กำหนดให้ใช้ pwsh แต่ Windows ไม่มี:
+
+ดาวน์โหลดจาก GitHub Releases
+
+ติดตั้ง .msi ตามเวอร์ชันของ Windows (x64 หรือ x86)
+
+เพิ่มลงใน %PATH% ถ้าจำเป็น:
+
+sh
+Copy
+Edit
+setx PATH "%PATH%;C:\Program Files\PowerShell\7"
+รีสตาร์ทเครื่อง และลองรัน GitLab Runner อีกครั้ง
+
+
+
+gitlab-runner install
+gitlab-runner uninstall
+
+
+
+# 1️⃣ ตั้งค่า Git (ครั้งแรกเท่านั้น)
+git config --global user.name "Apiwat"
+git config --global user.email "your-email@example.com"
+
+# 2️⃣ สร้างโปรเจกต์และใส่ไฟล์
+mkdir test-project-credit
+cd test-project-credit
+cp /path/to/.gitlab-ci.yml .
+cp /path/to/fetch_data.py .
+
+# 3️⃣ เริ่มต้น Git และบันทึกโค้ด
+git init
+git add .
+git commit -m "🚀 Initial commit: Add CI/CD and fetch_data script"
+
+# 4️⃣ เชื่อมต่อกับ GitLab
+git remote add origin https://gitlab.kbjcapital.co.th/apiwat/test-project-credit.git
+git branch -M main
+git push -u origin main
+
+
+
+
+https://gitlab.kbjcapital.co.th/
+T-sPV4pMRF8EysVm9xvv
+self-hosted-runner
+schedule-runner
+shell
+
+
+
+
+ลงทะเบียนใหม่
+gitlab-runner unregister --all-runners
+gitlab-runner register --url "https://gitlab.kbjcapital.co.th/" --registration-token "T-sPV4pMRF8EysVm9xvv" --executor "shell" --shell "cmd" --description "self-hosted-runner" --tag-list "schedule-runner"
