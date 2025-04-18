@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import jaydebeapi
 import pandas as pd
 import os
@@ -11,13 +12,13 @@ db_user = "Apiwat"  #
 db_password = "Apiw@2024"  
 jdbc_jar = "tibero6-jdbc.jar"   
 
-# ประกาศฟังก์ชัน query_data()
+# ยปรรยกร’รยฟร‘ยงยกรฌยชร‘ยน query_data()
 def query_data():
     try:
-        # เชื่อมต่อฐานข้อมูล
+        # ร ยชร—รจรรยตรจรยฐร’ยนยขรฉรรรร…
         conn = jaydebeapi.connect(jdbc_driver, jdbc_url, [db_user, db_password], jdbc_jar)
         
-        # สร้าง cursor
+        # รรรฉร’ยง cursor
         cursor = conn.cursor()
 
         # SQL1 Query GIS 04001 Pending
@@ -553,7 +554,7 @@ SELECT /*+ INDEX(H PK_CCMM_USER_M) INDEX(C PK_CCMM_CODE_D) */
    AND T.CSTNO = R.CSTNO """
         
         
-        # ดึงข้อมูลจากฐานข้อมูล
+        # ยดร–ยงยขรฉรรรร…ยจร’ยกยฐร’ยนยขรฉรรรร…
         cursor.execute(query1)
         data1 = cursor.fetchall()
         cursor.execute(query2)
@@ -563,18 +564,18 @@ SELECT /*+ INDEX(H PK_CCMM_USER_M) INDEX(C PK_CCMM_CODE_D) */
         cursor.execute(query4)
         data4 = cursor.fetchall()
 
-        # แปลงข้อมูลเป็น DataFrame
+        # รกยปร…ยงยขรฉรรรร…ร ยปรงยน DataFrame
         df1 = pd.DataFrame(data1, columns=['Evaluator', 'On-boarding Channel', 'Product Code', 'Requested date', 'Request time', 'Customer No', 'Customer Name', 'Customer ID No.', 'Loan No.', 'Evaluating progress status', 'Project Code', 'Loan Amt.', 'Pre-Application No', 'CSS evaluation result', 'Final Result', 'Return reason', 'Cancellation Reason', 'Decline reason', 'Pending Reason', 'Evaluation Date', 'Confirmation date'])
         df2 = pd.DataFrame(data2, columns=['Requested date', 'Evaluation status', 'Pre-Application No', 'Loan No.', 'Customer ID No.', 'Customer Name', 'Product Code', 'Project Code', 'Loan Amt.', 'Fast Approval', 'CSS result', 'Final Result', 'Evaluation Date', 'Evaluator', 'Approval result', 'Approval Date', 'Approver'])
         df3 = pd.DataFrame(data3, columns=['Evaluator', 'On-boarding Channel', 'Product Code', 'Requested date', 'Request time', 'Customer No', 'Customer Name', 'Customer ID No.', 'Loan No.', 'Evaluating progress status', 'Project Code', 'Loan Amt.', 'Pre-Application No', 'CSS evaluation result', 'Final Result', 'Return reason', 'Cancellation Reason', 'Decline reason', 'Pending Reason', 'Evaluation Date', 'Confirmation date'])
         df4 = pd.DataFrame(data4, columns=['Evaluator', 'On-boarding Channel', 'Product Code', 'Requested date', 'Request time', 'Customer No', 'Customer Name', 'Customer ID No.', 'Loan No.', 'Evaluating progress status', 'Project Code', 'Loan Amt.', 'Pre-Application No', 'CSS evaluation result', 'Final Result', 'Return reason', 'Cancellation Reason', 'Decline reason', 'Pending Reason', 'Evaluation Date', 'Confirmation date'])
 
-        # ฟังก์ชันแปลงข้อมูล
+        # ยฟร‘ยงยกรฌยชร‘ยนรกยปร…ยงยขรฉรรรร…
         def some_transformation_function(df):
             df['Requested date'] = pd.to_datetime(df['Requested date'], errors='coerce')
             df['Loan No.'] = df['Loan No.'].astype(str)
 
-            # ตรวจสอบประเภทคอลัมน์เพื่อป้องกัน FutureWarning
+            # ยตรรยจรรยบยปรรร ร€ยทยครร…ร‘รยนรฌร ยพร—รจรยปรฉรยงยกร‘ยน FutureWarning
             if 'Requested date' in df.columns:
                 df['Requested date'] = df['Requested date'].astype('datetime64[ns]')
 
@@ -587,19 +588,19 @@ SELECT /*+ INDEX(H PK_CCMM_USER_M) INDEX(C PK_CCMM_CODE_D) */
         transformed_df4 = some_transformation_function(df4)
         
 
-        # ตั้งชื่อไฟล์ตามเวลา
+        # ยตร‘รฉยงยชร—รจรรคยฟร…รฌยตร’รร รร…ร’
         current_time = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
         file1 = f"Evaluation_List_{current_time}.xlsx"
         file2 = f"Evaluation_Approval_{current_time}.xlsx"
         file3 = f"Evaluation_List_Cancelled_{current_time}.xlsx"
         file4 = f"Evaluation_Timestamp_{current_time}.xlsx"
 
-        # ลบไฟล์เก่า
+        # ร…ยบรคยฟร…รฌร ยกรจร’
         for file in os.listdir():
             if file.startswith("Evaluation_") and file.endswith(".xlsx"):
                 os.remove(file)
 
-        # บันทึกเป็น Excel
+        # ยบร‘ยนยทร–ยกร ยปรงยน Excel
         transformed_df1.to_excel(file1, index=False, engine="openpyxl")
         transformed_df2.to_excel(file2, index=False, engine="openpyxl")
         transformed_df3.to_excel(file3, index=False, engine="openpyxl")
@@ -611,10 +612,10 @@ SELECT /*+ INDEX(H PK_CCMM_USER_M) INDEX(C PK_CCMM_CODE_D) */
         print(f"Error occurred: {e}")
 
     finally:
-        if 'conn' in locals():  # เช็คว่า conn ถูกประกาศก่อนจะปิด
+        if 'conn' in locals():  # ร ยชรงยครรจร’ conn ยถรยกยปรรยกร’รยกรจรยนยจรยปร”ยด
             conn.close()
 
-# ฟังก์ชันย้ายไฟล์ไป backup
+# ยฟร‘ยงยกรฌยชร‘ยนรรฉร’รรคยฟร…รฌรคยป backup
 def move_to_backup():
     backup_dir = "backup"
     os.makedirs(backup_dir, exist_ok=True)
@@ -626,7 +627,7 @@ def move_to_backup():
                 os.rename(file, backup_path)
     print("Files have been moved to backup.")
     
-# ตั้งเวลารันเฉพาะวันจันทร์-ศุกร์ (08:30 - 21:30)
+# ยตร‘รฉยงร รร…ร’รร‘ยนร ยฉยพร’รรร‘ยนยจร‘ยนยทรรฌ-รรยกรรฌ (08:30 - 21:30)
 for hour in ["09:00", "11:00", "13:00","14:23", "15:30", "17:00", "20:40"]:
     schedule.every().monday.at(hour).do(query_data)
     schedule.every().tuesday.at(hour).do(query_data)
@@ -634,17 +635,17 @@ for hour in ["09:00", "11:00", "13:00","14:23", "15:30", "17:00", "20:40"]:
     schedule.every().thursday.at(hour).do(query_data)
     schedule.every().friday.at(hour).do(query_data)
 
-# ตั้งเวลารันเฉพาะวันเสาร์-อาทิตย์ (08:30 - 21:30)
+# ยตร‘รฉยงร รร…ร’รร‘ยนร ยฉยพร’รรร‘ยนร รร’รรฌ-รร’ยทร”ยตรรฌ (08:30 - 21:30)
 for hour in ["13:00", "15:30", "17:00", "20:40"]:
     schedule.every().saturday.at(hour).do(query_data)
     schedule.every().sunday.at(hour).do(query_data)
     
-    # ตั้งเวลาย้ายไฟล์ไป backup เวลา 20:58 ทุกวัน
+    # ยตร‘รฉยงร รร…ร’รรฉร’รรคยฟร…รฌรคยป backup ร รร…ร’ 20:58 ยทรยกรร‘ยน
 schedule.every().day.at("20:55").do(move_to_backup)
 
-# Loop รันเฉพาะช่วงเวลา 08:30 - 21:30
+# Loop รร‘ยนร ยฉยพร’รยชรจรยงร รร…ร’ 08:30 - 21:30
 while True:
     now = datetime.now().strftime("%H:%M")
     if "08:30" <= now <= "21:30":
         schedule.run_pending()
-    time.sleep(30)  # ลดการใช้ CPU โดยรันทุก 30 วินาที
+    time.sleep(30)  # ร…ยดยกร’รรฃยชรฉ CPU รขยดรรร‘ยนยทรยก 30 รร”ยนร’ยทร•
