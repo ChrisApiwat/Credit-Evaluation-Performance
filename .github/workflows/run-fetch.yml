@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: 📥 Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ☕ Set up Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -40,7 +40,7 @@ jobs:
         run: dir *.xlsx
 
       - name: 📤 Upload exported Excel files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: evaluation-excel
           path: Evaluation_*.xlsx
